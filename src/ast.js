@@ -376,3 +376,13 @@ x.Undefined = function() {
 };
 
 x.Identifier = identifier;
+
+// Function aliases
+
+x.AliasPrint = function(args, funcName) {
+	return x.CallExpression(x.PropertyExpression(identifier("console"), identifier(funcName ? funcName : "log")), args);
+};
+
+x.AliasError = function(args) {
+	return x.AliasPrint(args, "error");
+};

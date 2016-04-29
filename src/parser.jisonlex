@@ -68,6 +68,8 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "return"					return "RETURN"
 "break"						return "BREAK"
 "continue"					return "CONTINUE"
+"print"						return "PRINT"
+"error"						return "ERROR"
 
 {id}						return "IDENTIFIER"
 {number}\b					return "NUMBER"

@@ -101,6 +101,7 @@ expressions
 
 expression
 	: declaration											{$$ = $1;}
+	| alias_call_expressions								{$$ = $1;}
 	| execution_expression									{$$ = $1;}
 	| anon_expression										{$$ = $1;}
 	| object_expression										{$$ = $1;}
@@ -110,6 +111,16 @@ expression
 	| loop_expression										{$$ = $1;}
 	| assignment_expression									{$$ = $1;}
 	;
+
+alias_call_expressions
+	: PRINT alias_call										{$$ = ast.AliasPrint($2);}
+	| ERROR alias_call										{$$ = ast.AliasError($2);}
+	;
+	
+	alias_call
+		: LPAREN w RPAREN									{$$ = [];}
+		| LPAREN w call_arguments w RPAREN					{$$ = $3;}
+		;
 
 declaration
 	: VARIABLE IDENTIFIER									{$$ = ast.VarDeclaration($1, $2);}
