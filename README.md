@@ -4,16 +4,21 @@
 
 A simpler Javascript without oversimplifying like CoffeScript and its relatives.
 
-*Note: Specific syntax is highly variable.*
+The long-term goal is for more portions of the language to be considered expressions, allowing the use of `if`s and loops in variable declarations and other locations (similar to Rust). This currently doesn't work.
+
+*Note: Specific syntax is highly variable, and it not yet 100% feature parity with Javascript.*
 
 ---
 
-## Most notable changes
+## Differences from Javascript
 
 ### Syntax
 
 * No semicolons
 * No parentheses around conditionals
+* `==` is `===`. There is no equivalent of Javascript's `==`.
+* `and`, `or`, and `not` are used in place of `&&`, `||`, and `!`.
+* Trailing commas are allowed in object and array definitions.
 
 ### Commonly-used function aliases
 
@@ -65,6 +70,11 @@ $(function() {
 })();
 ```
 
+### Functions
+
+Mostly the same as Javascript, but functions without parameters don't require parentheses.
+Currently `func` or `fun` in place of `function`, but only because I've yet to decided which is best.
+
 ### `loop`
 
 A simple infinite loop, because typing `while(true)` is a lot of work. Not much more to it.
@@ -106,5 +116,24 @@ for(var n = 0; n < 10; n++) {
 
 for(var n = 0; n < 12; n+=3) {
     countBy3(n);
+}
+```
+
+### `for-each` loops
+
+A shortcut for looping through arrays.
+
+```javascript
+//GuavaScript
+for x in x_list {
+    doThing(x)
+}
+```
+
+```javascript
+//Javascript
+for(var n = 0; n < x_list.length; n++) {
+    var x = x_list[n];
+    doThing(x);
 }
 ```
