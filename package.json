@@ -1,0 +1,23 @@
+{
+  "name": "guavascript",
+  "version": "0.1.0",
+  "description": "More simple javascript that isn't as bad as coffeescript.",
+  "main": "guavac",
+  "directories": {
+    "test": "test"
+  },
+  "bin": {
+    "guavac": "./index.js"
+  },
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "javascript"
+  ],
+  "author": "Enigma",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^2.9.0"
+  }
+}
