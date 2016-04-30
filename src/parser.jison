@@ -86,22 +86,27 @@ program
 	: expressions EOF										{return ast.Program($1);}
 	;
 
-/* Expressions */
-
 expressions
 	: w expression_list expression w						{$$ = $2; noNullPush($$, processTopLevelExpression($3));}
 	| w expression w										{$$ = []; noNullPush($$, processTopLevelExpression($2));}
+	| w expression_list statement w							{$$ = $2; noNullPush($$, processTopLevelExpression($3));}
+	| w statement w											{$$ = []; noNullPush($$, processTopLevelExpression($2));}
 	| w														{$$ = [];}
 	;
 	
 	expression_list
 		: expression_list expression W						{noNullPush($1, processTopLevelExpression($2));}
 		| expression W										{$$ = []; noNullPush($$, processTopLevelExpression($1));}
+		| expression_list statement W						{noNullPush($1, processTopLevelExpression($2));}
+		| statement W										{$$ = []; noNullPush($$, processTopLevelExpression($1));}
 		;
 
+statement
+	: var_declaration										{$$ = $1;}
+	;
+
 expression
-	: declaration											{$$ = $1;}
-	| alias_call_expressions								{$$ = $1;}
+	: alias_call_expressions								{$$ = $1;}
 	| execution_expression									{$$ = $1;}
 	| anon_expression										{$$ = $1;}
 	| object_expression										{$$ = $1;}
@@ -122,10 +127,16 @@ alias_call_expressions
 		| LPAREN w call_arguments w RPAREN					{$$ = $3;}
 		;
 
-declaration
-	: VARIABLE IDENTIFIER									{$$ = ast.VarDeclaration($1, $2);}
-	| VARIABLE IDENTIFIER assignment_operator expression	{$$ = ast.VarDeclaration($1, $2, $4);}
+var_declaration
+	: VARIABLE var_declarators								{$$ = ast.VarDeclarations($1, $2);}
 	;
+	
+	var_declarators
+		: IDENTIFIER															{$$ = [ast.VarDeclaration($1)];}
+		| IDENTIFIER assignment_operator expression								{$$ = [ast.VarDeclaration($1, $3)];}
+		| var_declarators COMMA w IDENTIFIER									{$1.push(ast.VarDeclaration($4));}
+		| var_declarators COMMA w IDENTIFIER assignment_operator expression		{$1.push(ast.VarDeclaration($4, $6));}
+		;
 
 execution_expression
 	: IDENTIFIER anon_expression							{$$ = ast.ExecExpression($1, $2);}
@@ -174,8 +185,8 @@ function_expression
 			;
 
 anon_expression
-	: LEXEC expressions REXEC								{$$ = ast.AnonFuncExpression(null, $2);}
-	| LEXEC BITOR anon_arguments BITOR expressions REXEC	{$$ = ast.AnonFuncExpression($2, $4);}
+	: LEXEC expressions REXEC								{$$ = ast.AnonFuncExpression(null, ast.BlockExpression($2));}
+	| BITOR anon_arguments BITOR LEXEC expressions REXEC	{$$ = ast.AnonFuncExpression($2, ast.BlockExpression($5));}
 	;
 	
 	anon_arguments
@@ -262,11 +273,14 @@ op_expression
 		| MINUS					{$$ = "-";}
 		| MULTIPLY				{$$ = "*";}
 		| DIVIDE				{$$ = "/";}
+		| INSTANCEOF			{$$ = "instanceof";}
 		;
 
 unary_expression
 	: post_expression										{$$ = $1;}
 	| MINUS unary_expression %prec UMINUS					{$$ = ast.UnaryExpression("-", $2);}
+	| NEW post_expression LPAREN w RPAREN					{$$ = ast.NewExpression($2);}
+	| NEW post_expression LPAREN w call_arguments w RPAREN	{$$ = ast.NewExpression($2, $5);}
 	;
 
 post_expression
@@ -285,7 +299,7 @@ post_expression
 primary_expression
 	: IDENTIFIER											{$$ = ast.Identifier($1);}
 	| constant												{$$ = $1;}
-	| LPAREN w conditional_expression w RPAREN				{$$ = $2;}
+	| LPAREN w conditional_expression w RPAREN				{$$ = $3;}
 	;
 
 constant
@@ -294,6 +308,7 @@ constant
 	| OCTALNUMBER											{$$ = ast.NumericLiteral($1);}
 	| BINARYNUMBER											{$$ = ast.NumericLiteral($1);}
 	| STRING												{$$ = ast.StringLiteral($1);}
+	| THIS													{$$ = ast.ThisExpression();}
 	| TRUE													{$$ = ast.BooleanLiteral(true);}
 	| FALSE													{$$ = ast.BooleanLiteral(false);}
 	| NULL													{$$ = ast.NullLiteral();}

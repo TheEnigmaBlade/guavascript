@@ -109,6 +109,9 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "continue"					return "CONTINUE";
 "print"						return "PRINT";
 "error"						return "ERROR";
+"this"						return "THIS";
+"new"						return "NEW";
+"instanceof"				return "INSTANCEOF";
 
 {id}						return "IDENTIFIER";
 
