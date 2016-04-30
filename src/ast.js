@@ -356,6 +356,7 @@ x.AssignExpression = function(op, left, right) {
 };
 
 x.NumericLiteral = function(raw_val) {
+	raw_val = raw_val.replace(/_/g, "");
 	return literal(raw_val, Number(raw_val));
 };
 

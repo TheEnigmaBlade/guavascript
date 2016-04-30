@@ -5,10 +5,10 @@
 %}
 
 newline			[\n\r]
-number			([0-9]+(\.[0-9]+)?)|(\.[0-9]+)
-hexnumber		[0-9a-fA-F]+
-octalnumber		[0-7]+
-binarynumber	[01]+
+number			([0-9]([_]?[0-9])*)([\.][0-9]+)?|[\.][0-9]+
+hexnumber		[0-9a-fA-F]([_]?[0-9a-fA-F])*
+octalnumber		[0-7]([_]?[0-7])*
+binarynumber	[01]([_]?[01])*
 id				[a-zA-Z_$][a-zA-Z0-9_$]*
 
 %x dstring
@@ -43,6 +43,11 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 <esc>[0]					{string += "\0"; this.popState();}
 <esc>[']					{string += "\'"; this.popState();}
 <esc>["]					{string += "\""; this.popState();}
+
+"0x"{hexnumber}\b			return "HEXNUMBER";
+"0o"{octalnumber}\b			return "OCTALNUMBER";
+"0b"{binarynumber}\b		return "BINARYNUMBER";
+{number}\b					return "NUMBER";
 
 "{{"						return "LEXEC";
 "}}"						return "REXEC";
@@ -106,10 +111,6 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "error"						return "ERROR";
 
 {id}						return "IDENTIFIER";
-"0x"{hexnumber}\b			return "HEXNUMBER";
-"0o"{octalnumber}\b			return "OCTALNUMBER";
-"0b"{binarynumber}\b		return "BINARYNUMBER";
-{number}\b					return "NUMBER";
 
 <<EOF>>						return "EOF";
 .							return "INVALID";
