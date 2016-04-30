@@ -103,6 +103,7 @@ expressions
 
 statement
 	: var_declaration										{$$ = $1;}
+	| THROW expression										{$$ = ast.ThrowStatement($2);}
 	;
 
 expression
@@ -281,6 +282,7 @@ unary_expression
 	| MINUS unary_expression %prec UMINUS					{$$ = ast.UnaryExpression("-", $2);}
 	| NEW post_expression LPAREN w RPAREN					{$$ = ast.NewExpression($2);}
 	| NEW post_expression LPAREN w call_arguments w RPAREN	{$$ = ast.NewExpression($2, $5);}
+	| TYPEOF post_expression								{$$ = ast.UnaryExpression("typeof", $2);}
 	;
 
 post_expression

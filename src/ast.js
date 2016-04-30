@@ -296,6 +296,13 @@ x.VarDeclaration = function(id, init, rawId) {
 	};
 };
 
+x.ThrowStatement = function(arg) {
+	return {
+		type: "ThrowStatement",
+		argument: arg
+	};
+};
+
 x.UnaryExpression = function(op, arg, prefix) {
 	if(prefix === undefined) {
 		prefix = true;

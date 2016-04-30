@@ -16,6 +16,8 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 %x esc
 %x comment
 
+%s anonfunc
+
 %%
 
 "//".*						/* Ignore comments */
@@ -49,8 +51,8 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "0b"{binarynumber}\b		return "BINARYNUMBER";
 {number}\b					return "NUMBER";
 
-"{{"						return "LEXEC";
-"}}"						return "REXEC";
+"{{"						{this.begin("anonfunc");	return "LEXEC";}
+<anonfunc>"}}"				{this.popState();			return "REXEC";}
 ".."						return "RANGE";
 
 "+="						return "PLUSASSIGN";
@@ -112,6 +114,8 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "this"						return "THIS";
 "new"						return "NEW";
 "instanceof"				return "INSTANCEOF";
+"typeof"					return "TYPEOF";
+"throw"						return "THROW";
 
 {id}						return "IDENTIFIER";
 
