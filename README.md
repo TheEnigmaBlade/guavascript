@@ -38,7 +38,7 @@ doThing({{
     callbackAction()
 }})
 
-getThing({{|thing|
+getThing(|thing|{{
     callbackAction(thing)
 }})
 ```
