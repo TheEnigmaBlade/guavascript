@@ -10,14 +10,20 @@
     "guavac": "./index.js"
   },
   "scripts": {
-    "test": "node test.js"
+    "start": "node index.js",
+    "test": "mocha test/*.js"
   },
   "keywords": [
     "javascript"
   ],
-  "author": "Enigma",
-  "license": "ISC",
+  "author": "Tyler Haines",
+  "license": "MIT",
   "dependencies": {
     "commander": "^2.9.0"
+  },
+  "devDependencies": {
+    "jison": "^0.4.17",
+    "istanbul": "^0.4.3",
+    "mocha": "^2.4.5"
   }
 }
