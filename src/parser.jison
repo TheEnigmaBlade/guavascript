@@ -290,6 +290,9 @@ primary_expression
 
 constant
 	: NUMBER												{$$ = ast.NumericLiteral($1);}
+	| HEXNUMBER												{$$ = ast.NumericLiteral($1);}
+	| OCTALNUMBER											{$$ = ast.NumericLiteral($1);}
+	| BINARYNUMBER											{$$ = ast.NumericLiteral($1);}
 	| STRING												{$$ = ast.StringLiteral($1);}
 	| TRUE													{$$ = ast.BooleanLiteral(true);}
 	| FALSE													{$$ = ast.BooleanLiteral(false);}

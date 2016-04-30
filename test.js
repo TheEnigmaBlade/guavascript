@@ -17,7 +17,7 @@ fs.readFile(inputFile, 'utf8', function (err, data) {
 	var parsed = parser.parse(data);
 	console.log(JSON.stringify(parsed, null, 2));
 	
-	var output = generate(parsed, {format: {indent: {style: "\t"}, quotes: "double"}, comment: false});
+	var output = generate(parsed, {format: {indent: {style: "\t"}, quotes: "double", escapeless: false}, comment: false});
 	console.log("---------------");
 	console.log(output);
 	
