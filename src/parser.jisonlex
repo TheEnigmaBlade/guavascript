@@ -1,6 +1,5 @@
 %{
 	if(!(yy.commentDepth)) {
-		yy.string = "";
 		yy.commentDepth = 0;
 	}
 %}
@@ -28,22 +27,22 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 {newline}+					return "NEWLINE";
 \s+							/* Ignore whitespace */
 
-\"							{this.begin("dstring"); yy.string = "";}
-<dstring>\"					{this.popState(); yytext = yy.string; return "STRING";}
+\"							{this.begin("dstring"); string = "";}
+<dstring>\"					{this.popState(); yytext = string; return "STRING";}
 <dstring>\\					{this.begin("esc");}
-<dstring>[^"\\]*			{yy.string += yytext;}
+<dstring>[^"\\]*			{string += yytext;}
 
-\'							{this.begin("sstring"); yy.string = "";}
-<sstring>\'					{this.popState(); yytext = yy.string; return "STRING";}
+\'							{this.begin("sstring"); string = "";}
+<sstring>\'					{this.popState(); yytext = string; return "STRING";}
 <sstring>\\					{this.begin("esc");}
-<sstring>[^'\\]*			{yy.string += yytext;}
+<sstring>[^'\\]*			{string += yytext;}
 
-<esc>[n]					{yy.string += "\n"; this.popState();}	/* There has to be a better way to do this... */
-<esc>[r]					{yy.string += "\r"; this.popState();}
-<esc>[t]					{yy.string += "\t"; this.popState();}
-<esc>[0]					{yy.string += "\0"; this.popState();}
-<esc>[']					{yy.string += "\'"; this.popState();}
-<esc>["]					{yy.string += "\""; this.popState();}
+<esc>[n]					{string += "\n"; this.popState();}	/* There has to be a better way to do this... */
+<esc>[r]					{string += "\r"; this.popState();}
+<esc>[t]					{string += "\t"; this.popState();}
+<esc>[0]					{string += "\0"; this.popState();}
+<esc>[']					{string += "\'"; this.popState();}
+<esc>["]					{string += "\""; this.popState();}
 
 "{{"						return "LEXEC";
 "}}"						return "REXEC";

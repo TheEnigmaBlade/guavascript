@@ -869,10 +869,8 @@ stateStackSize:function stateStackSize() {
 options: {},
 performAction: function anonymous(yy,yy_,$avoiding_name_collisions,YY_START) {
 	if(!(yy.commentDepth)) {
-		yy.string = "";
 		yy.commentDepth = 0;
 	}
-	//"/*"(.|{newline})*?"*/"	/* Ignore multiline comment */
 
 var YYSTATE=YY_START;
 switch($avoiding_name_collisions) {
@@ -880,43 +878,43 @@ case 0:/* Ignore comments */
 break;
 case 1:/* Ignore comments */
 break;
-case 2:console.log(yy.commentDepth);yy.commentDepth++; this.begin("comment");
+case 2:yy.commentDepth++; this.begin("comment");
 break;
-case 3:console.log(yy.commentDepth);yy.commentDepth++;
+case 3:yy.commentDepth++;
 break;
-case 4:console.log(yy.commentDepth);yy.commentDepth--; if(yy.commentDepth === 0) {this.popState();}
+case 4:yy.commentDepth--; if(yy.commentDepth === 0) {this.popState();}
 break;
 case 5:return "NEWLINE";
 break;
 case 6:/* Ignore whitespace */
 break;
-case 7:this.begin("dstring"); yy.string = "";
+case 7:this.begin("dstring"); string = "";
 break;
-case 8:this.popState(); yy_.yytext = yy.string; return "STRING";
+case 8:this.popState(); yy_.yytext = string; return "STRING";
 break;
 case 9:this.begin("esc");
 break;
-case 10:yy.string += yy_.yytext;
+case 10:string += yy_.yytext;
 break;
-case 11:this.begin("sstring"); yy.string = "";
+case 11:this.begin("sstring"); string = "";
 break;
-case 12:this.popState(); yy_.yytext = yy.string; return "STRING";
+case 12:this.popState(); yy_.yytext = string; return "STRING";
 break;
 case 13:this.begin("esc");
 break;
-case 14:yy.string += yy_.yytext;
+case 14:string += yy_.yytext;
 break;
-case 15:yy.string += "\n"; this.popState();
+case 15:string += "\n"; this.popState();
 break;
-case 16:yy.string += "\r"; this.popState();
+case 16:string += "\r"; this.popState();
 break;
-case 17:yy.string += "\t"; this.popState();
+case 17:string += "\t"; this.popState();
 break;
-case 18:yy.string += "\0"; this.popState();
+case 18:string += "\0"; this.popState();
 break;
-case 19:yy.string += "\'"; this.popState();
+case 19:string += "\'"; this.popState();
 break;
-case 20:yy.string += "\""; this.popState();
+case 20:string += "\""; this.popState();
 break;
 case 21:return "LEXEC";
 break;
