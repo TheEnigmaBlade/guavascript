@@ -15,10 +15,12 @@ The long-term goal is for more portions of the language to be considered express
 ### Syntax
 
 * No semicolons.
+* **Sensitive to line breaks.** Lenient around blocks and other separation characters (like commas or colons).
 * No parentheses around conditionals.
-* **Sensitive to line breaks.** Lenient around blocks and other separation characters (like commas).
+* Trailing commas are allowed in object and array definitions.
 * `==` is `===`. There is no equivalent of Javascript's `==`.
 * `and`, `or`, and `not` are used in place of `&&`, `||`, and `!`.
+* Multi-line comments nest instead of stopping at the first `*/`.
 
 ### Commonly-used function aliases
 
