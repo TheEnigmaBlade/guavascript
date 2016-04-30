@@ -16,6 +16,7 @@ The long-term goal is for more portions of the language to be considered express
 
 * No semicolons
 * No parentheses around conditionals
+* **Sensitive to line breaks.** Lenient around blocks and other separation characters (like commas).
 * `==` is `===`. There is no equivalent of Javascript's `==`.
 * `and`, `or`, and `not` are used in place of `&&`, `||`, and `!`.
 * Trailing commas are allowed in object and array definitions.
