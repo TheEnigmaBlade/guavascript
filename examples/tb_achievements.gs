@@ -89,9 +89,9 @@ fun achievements {
                     // eh, close enough.
                     // any better solution for links requires re-writing all the rewriting register functions
                     // to support another prop.  If someone want to do that, go for it.
-                    //try {
+                    try {{
                         title = $(achievement.title).text() ? $(achievement.title).text() : achievement.title
-                    //} catch(e) {}
+                    }} catch e {}
 
                     self.log('    '+ title +' Unlocked!')
                     TBUtils.notification('Mod achievement unlocked!', title, window.location + '#?tbsettings=' + self.shortname)
