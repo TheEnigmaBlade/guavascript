@@ -139,3 +139,37 @@ for(var n = 0; n < x_list.length; n++) {
     doThing(x);
 }
 ```
+
+### `try-catch`
+
+The try-catch structure has been mostly left as is with one exception. The `try` statement accepts an expression rather than a delimited block, meaning you can use a function call or assignment without extra punctuation.
+
+```javascript
+//GuavaScript
+try unstableFunction() catch e {
+    error("Something bad happened!")
+}
+```
+
+```javascript
+//Javascript
+try {
+    unstableFunction();
+}
+catch(e) {
+    error("Something bad happened!");
+}
+```
+
+The original try-catch can also be achieved using an anonymous function:
+
+```javascript
+//GuavaScript
+var result
+try {{
+    var input = unstableInput()
+    result = unstableFunction(input)
+}}
+catch e2 {
+    error("Something bad happened!")
+}
