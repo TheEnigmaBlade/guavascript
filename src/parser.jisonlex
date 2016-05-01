@@ -116,6 +116,9 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "instanceof"				return "INSTANCEOF";
 "typeof"					return "TYPEOF";
 "throw"						return "THROW";
+"try"						return "TRY";
+"catch"						return "CATCH";
+"always"					return "FINALLY";
 
 {id}						return "IDENTIFIER";
 

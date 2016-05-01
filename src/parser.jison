@@ -68,12 +68,10 @@
 	}
 %}
 
-/* operator associations and precedence */
-
 %left BITOR
 %left BITAND
 %left AND OR
-%left NOT
+%right NOT
 %left PLUS MINUS
 %left MULTIPLY DIVIDE
 %right UMINUS
@@ -101,10 +99,25 @@ expressions
 		| statement W										{$$ = []; noNullPush($$, processTopLevelExpression($1));}
 		;
 
+// Statements
+
 statement
 	: var_declaration										{$$ = $1;}
 	| THROW expression										{$$ = ast.ThrowStatement($2);}
 	;
+
+var_declaration
+	: VARIABLE var_declarators								{$$ = ast.VarDeclarations($1, $2);}
+	;
+	
+	var_declarators
+		: IDENTIFIER															{$$ = [ast.VarDeclaration($1)];}
+		| IDENTIFIER assignment_operator expression								{$$ = [ast.VarDeclaration($1, $3)];}
+		| var_declarators COMMA w IDENTIFIER									{$1.push(ast.VarDeclaration($4));}
+		| var_declarators COMMA w IDENTIFIER assignment_operator expression		{$1.push(ast.VarDeclaration($4, $6));}
+		;
+
+// Expressions
 
 expression
 	: alias_call_expressions								{$$ = $1;}
@@ -116,6 +129,7 @@ expression
 	| control_expression									{$$ = $1;}
 	| loop_expression										{$$ = $1;}
 	| assignment_expression									{$$ = $1;}
+	| try_catch_expression									{$$ = $1;}
 	;
 
 alias_call_expressions
@@ -126,17 +140,6 @@ alias_call_expressions
 	alias_call
 		: LPAREN w RPAREN									{$$ = [];}
 		| LPAREN w call_arguments w RPAREN					{$$ = $3;}
-		;
-
-var_declaration
-	: VARIABLE var_declarators								{$$ = ast.VarDeclarations($1, $2);}
-	;
-	
-	var_declarators
-		: IDENTIFIER															{$$ = [ast.VarDeclaration($1)];}
-		| IDENTIFIER assignment_operator expression								{$$ = [ast.VarDeclaration($1, $3)];}
-		| var_declarators COMMA w IDENTIFIER									{$1.push(ast.VarDeclaration($4));}
-		| var_declarators COMMA w IDENTIFIER assignment_operator expression		{$1.push(ast.VarDeclaration($4, $6));}
 		;
 
 execution_expression
@@ -223,12 +226,20 @@ loop_expression
 		| array_expression
 		;
 
+try_catch_expression
+	: TRY expression w CATCH IDENTIFIER w block_expression		{
+		$$ = ast.TryExpression(ast.BlockExpression([processTopLevelExpression($2)]),
+								ast.CatchClause(ast.Identifier($5), $7));}
+	;
+
 block_expression
 	: LBRACKET inc_depth expressions dec_depth RBRACKET			{$$ = ast.BlockExpression($3);}
 	;
 	
 	inc_depth:	{incDepth();};
 	dec_depth:	{decDepth();};
+
+// Begin "normal" expression chain
 
 assignment_expression
 	: conditional_expression								{$$ = $1;}

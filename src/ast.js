@@ -73,7 +73,7 @@ x.ExecExpression = function(id, func) {
 	
 	return {
 		type: "ExpressionStatement",
-		expression: func
+		expression: x.CallExpression(func)
 	};
 };
 
@@ -300,6 +300,30 @@ x.ThrowStatement = function(arg) {
 	return {
 		type: "ThrowStatement",
 		argument: arg
+	};
+};
+
+x.TryExpression = function(body, catchBlock, finallyBlock) {
+	if(catchBlock === undefined) {
+		catchBlock = null;
+	}
+	if(finallyBlock === undefined) {
+		finallyBlock = null;
+	}
+	
+	return {
+		type: "TryStatement",
+		block: body,
+		handler: catchBlock,
+		finalizer: finallyBlock
+	};
+};
+
+x.CatchClause = function(param, body) {
+	return {
+		type: "CatchClause",
+		param: param,
+		body: body
 	};
 };
 
