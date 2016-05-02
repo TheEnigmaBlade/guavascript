@@ -1,6 +1,10 @@
 %{
 	var ast = require("./ast");
 	
+	function print(t) {
+		console.log(t);
+	}
+	
 	// Depth tracking
 	var depth = 0;
 	
@@ -12,31 +16,42 @@
 		depth -= 1;
 	}
 	
+	// Post-processing
+	
 	var top_level_if = [];
 	
-	function processTopLevelExpression(e, nameAnon) {
+	function processTopLevelExpression(yy, e, nameAnon) {
 		// Move if-else/else into alternate slots
 		if(e._if) {
+			print("!Start if: "+depth);
 			e._depth = depth;
 			top_level_if.push(e);
 			return e;
 		}
 		if(e._if_else || e._else) {
-			var top;
-			if(top_level_if.length === 0 || (top = top_level_if[top_level_if.length-1])._depth !== depth) {
+			print("!Start if-else/else: "+depth);
+			
+			var top = top_level_if[top_level_if.length-1];
+			print("  Top if depth: "+top._depth);
+			if(top_level_if.length === 0 || top._depth !== depth) {
 				throw "else-if/else found before if";
 			}
 			
 			top.alternate = e;
-			if(e._else) {
-				top_level_if.pop();
+			top_level_if.pop();
+			if(e._if_else) {
+				e._depth = depth;
+				top_level_if.push(e);
 			}
 			return null;
 		}
 		
-		//console.log("Processing top level thing");
+		print("Processing other top-level thing");
+		print("  Depth: "+depth);
+		print("  Type: "+e.type);
 		while(top_level_if.length > 0 && top_level_if[top_level_if.length-1]._depth >= depth) {
-			top_level_if.pop();
+			var top = top_level_if.pop();
+			print("  Popping if: "+top._depth);
 		}
 		
 		// Wrap or declarize functions
@@ -85,18 +100,18 @@ program
 	;
 
 expressions
-	: w expression_list expression w						{$$ = $2; noNullPush($$, processTopLevelExpression($3));}
-	| w expression w										{$$ = []; noNullPush($$, processTopLevelExpression($2));}
-	| w expression_list statement w							{$$ = $2; noNullPush($$, processTopLevelExpression($3));}
-	| w statement w											{$$ = []; noNullPush($$, processTopLevelExpression($2));}
+	: w expression_list expression w						{$$ = $2; noNullPush($$, processTopLevelExpression(yy, $3));}
+	| w expression w										{$$ = []; noNullPush($$, processTopLevelExpression(yy, $2));}
+	| w expression_list statement w							{$$ = $2; noNullPush($$, processTopLevelExpression(yy, $3));}
+	| w statement w											{$$ = []; noNullPush($$, processTopLevelExpression(yy, $2));}
 	| w														{$$ = [];}
 	;
 	
 	expression_list
-		: expression_list expression W						{noNullPush($1, processTopLevelExpression($2));}
-		| expression W										{$$ = []; noNullPush($$, processTopLevelExpression($1));}
-		| expression_list statement W						{noNullPush($1, processTopLevelExpression($2));}
-		| statement W										{$$ = []; noNullPush($$, processTopLevelExpression($1));}
+		: expression_list expression W						{noNullPush($1, processTopLevelExpression(yy, $2));}
+		| expression W										{$$ = []; noNullPush($$, processTopLevelExpression(yy, $1));}
+		| expression_list statement W						{noNullPush($1, processTopLevelExpression(yy, $2));}
+		| statement W										{$$ = []; noNullPush($$, processTopLevelExpression(yy, $1));}
 		;
 
 // Statements
@@ -228,16 +243,20 @@ loop_expression
 
 try_catch_expression
 	: TRY expression w CATCH IDENTIFIER w block_expression		{
-		$$ = ast.TryExpression(ast.BlockExpression([processTopLevelExpression($2)]),
+		$$ = ast.TryExpression(ast.BlockExpression([processTopLevelExpression(yy, $2)]),
 								ast.CatchClause(ast.Identifier($5), $7));}
 	;
 
-block_expression
-	: LBRACKET inc_depth expressions dec_depth RBRACKET			{$$ = ast.BlockExpression($3);}
+	block_expression
+		: LBRACKET inc_depth expressions dec_depth RBRACKET			{$$ = ast.BlockExpression($3);}
+		;
+		
+		inc_depth:	{incDepth();};
+		dec_depth:	{decDepth();};
+
+regex_expression
+	:
 	;
-	
-	inc_depth:	{incDepth();};
-	dec_depth:	{decDepth();};
 
 // Begin "normal" expression chain
 
@@ -312,7 +331,7 @@ post_expression
 primary_expression
 	: IDENTIFIER											{$$ = ast.Identifier($1);}
 	| constant												{$$ = $1;}
-	| LPAREN w conditional_expression w RPAREN				{$$ = $3;}
+	| LPAREN w expression w RPAREN							{$$ = $3;}
 	;
 
 constant
@@ -326,6 +345,7 @@ constant
 	| FALSE													{$$ = ast.BooleanLiteral(false);}
 	| NULL													{$$ = ast.NullLiteral();}
 	| UNDEFINED												{$$ = ast.Undefined();}
+	| REGEX													{$$ = ast.Regex($1);}
 	;
 
 // Utilities because I'm bad at grammars

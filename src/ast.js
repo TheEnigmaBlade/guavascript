@@ -1,3 +1,4 @@
+var escodegen = require("escodegen");
 var x = module.exports = {};
 
 // Helpers
@@ -425,6 +426,23 @@ x.NullLiteral = function() {
 
 x.Undefined = function() {
 	return identifier("undefined");
+};
+
+x.Regex = function(regex) {
+	var end = regex.lastIndexOf("/");
+	
+	var l = literal(regex, {});
+	l.regex = {
+		pattern: regex.substring(1, end),
+		flags: end+1 < regex.length ? regex.substring(end+1) : ""
+	};
+	// Despite being the output from other parsers, escodegen doesn't output the literal
+	// regexp properly. Overriding with the verbatim property for now.
+	l._verbatim = {
+		content: regex,
+		precedence : escodegen.Precedence.Primary,
+	};
+	return l;
 };
 
 x.Identifier = identifier;

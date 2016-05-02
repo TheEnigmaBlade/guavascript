@@ -1,6 +1,8 @@
 %{
-	if(!(yy.commentDepth)) {
+	if(!yy._setup) {
+		yy._setup = true;
 		yy.commentDepth = 0;
+		//yy.blockDepth = 0;
 	}
 %}
 
@@ -17,6 +19,7 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 %x comment
 
 %s anonfunc
+%s block
 
 %%
 
@@ -45,14 +48,19 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 <esc>[0]					{string += "\0"; this.popState();}
 <esc>[']					{string += "\'"; this.popState();}
 <esc>["]					{string += "\""; this.popState();}
+<esc>[\\]					{string += "\\"; this.popState();}
 
 "0x"{hexnumber}\b			return "HEXNUMBER";
 "0o"{octalnumber}\b			return "OCTALNUMBER";
 "0b"{binarynumber}\b		return "BINARYNUMBER";
 {number}\b					return "NUMBER";
 
-"{{"						{this.begin("anonfunc");	return "LEXEC";}
-<anonfunc>"}}"				{this.popState();			return "REXEC";}
+"/"(\\\/|[^\n\r])+"/"[a-z]*		return "REGEX";
+
+"{{"						{this.begin("anonfunc"); return "LEXEC";}
+"{"							{this.begin("block");	 return "LBRACKET";}
+<block>"}"					{this.popState();		 return "RBRACKET";}
+<anonfunc>"}}"				{this.popState();		 return "REXEC";}
 ".."						return "RANGE";
 
 "+="						return "PLUSASSIGN";
@@ -60,6 +68,7 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "*="						return "MULTIPLAYASSIGN";
 "/="						return "DIVIDEASSIGN";
 "=="						return "EQUALS";
+"is"						return "EQUALS";
 "!="						return "NOTEQUALS";
 ">="						return "GTE";
 "<="						return "LTE";
@@ -77,8 +86,6 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "|"							return "BITOR";
 "&"							return "BITAND";
 
-"{"							return "LBRACKET";
-"}"							return "RBRACKET";
 "["							return "LSQUARE";
 "]"							return "RSQUARE";
 "("							return "LPAREN";
@@ -93,9 +100,7 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "null"						return "NULL";
 "undefined"					return "UNDEFINED";
 
-"function"					return "FUNCTION";
-"func"						return "FUNCTION";
-"fun"						return "FUNCTION";
+("function"|"func"|"fun")\b	return "FUNCTION";
 "var"						return "VARIABLE";
 "let"						return "VARIABLE";
 "if"						return "IF";
@@ -116,8 +121,8 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "instanceof"				return "INSTANCEOF";
 "typeof"					return "TYPEOF";
 "throw"						return "THROW";
-"try"						return "TRY";
-"catch"						return "CATCH";
+("try"|"protect"|"guard")\b	return "TRY";
+("catch"|"except")\b		return "CATCH";
 "always"					return "FINALLY";
 
 {id}						return "IDENTIFIER";

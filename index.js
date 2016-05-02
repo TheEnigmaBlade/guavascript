@@ -26,7 +26,7 @@ function transpile(input_file, output_file, tab_style) {
 		var parsed = parser.parse(data);
 		//console.log(JSON.stringify(parsed, null, 2));
 		
-		var output = generate(parsed, {format: {indent: {style: tab_style}, quotes: "double", escapeless: false}, comment: true});
+		var output = generate(parsed, {format: {indent: {style: tab_style}, quotes: "double", escapeless: false}, comment: true, verbatim: "_verbatim"});
 		//console.log("---------------");
 		//console.log(output);
 		
