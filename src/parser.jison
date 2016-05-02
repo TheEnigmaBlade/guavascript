@@ -305,6 +305,7 @@ op_expression
 		| MULTIPLY				{$$ = "*";}
 		| DIVIDE				{$$ = "/";}
 		| INSTANCEOF			{$$ = "instanceof";}
+		| IN					{$$ = "in";}
 		;
 
 unary_expression
