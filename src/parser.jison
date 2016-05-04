@@ -245,14 +245,14 @@ control_expression
 		;
 	
 loop_expression
-	: LOOP block_expression														{$$ = ast.LoopExpression($2);}
+	: LOOP w block_expression													{$$ = ast.LoopExpression($3);}
 	| WHILE conditional_expression w block_expression							{$$ = ast.WhileLoop($2, $4);}
 	| for_loop_expressions
 	;
 	
 	for_loop_expressions
-		: FOR IDENTIFIER IN primary_expression w block_expression					{$$ = ast.ForEachLoop($4, $2, $6);}
-		| FOR IDENTIFIER IN op_expression range_operator op_expression w block_expression	{$$ = ast.ForLoop($2, $5, $4, $6, 1, $8);}
+		: FOR IDENTIFIER IN primary_expression w block_expression				{$$ = ast.ForEachLoop($4, $2, $6);}
+		| FOR IDENTIFIER IN op_expression range_operator op_expression w block_expression		{$$ = ast.ForLoop($2, $5, $4, $6, 1, $8);}
 		| FOR IDENTIFIER IN op_expression range_operator op_expression STEP op_expression w block_expression		{$$ = ast.ForLoop($2, $5, $4, $6, $8, $10);}
 		| FOR IDENTIFIER COMMA IDENTIFIER IN op_expression range_operator op_expression WITH op_expression w block_expression		{$$ = ast.ForLoop($2, $7, $6, $8, 1, $12, $4, $10);}
 		| FOR IDENTIFIER COMMA IDENTIFIER IN op_expression range_operator op_expression STEP op_expression WITH op_expression w block_expression		{$$ = ast.ForLoop($2, $7, $6, $8, $10, $14, $4, $12);}
