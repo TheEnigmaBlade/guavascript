@@ -98,6 +98,7 @@
 	}
 %}
 
+%left INSTANCEOF IN
 %left BITOR
 %left BITAND
 %left AND OR
@@ -317,18 +318,14 @@ compare_expression
 		;
 
 op_expression
-	: unary_expression										{$$ = $1;}
-	| op_expression op_operator unary_expression			{$$ = ast.BinaryExpression($2, $1, $3);}
+	: unary_expression									{$$ = $1;}
+	| op_expression PLUS op_expression					{$$ = ast.BinaryExpression("+", $1, $3);}
+	| op_expression MINUS op_expression					{$$ = ast.BinaryExpression("-", $1, $3);}
+	| op_expression MULTIPLY op_expression				{$$ = ast.BinaryExpression("*", $1, $3);}
+	| op_expression DIVIDE op_expression				{$$ = ast.BinaryExpression("/", $1, $3);}
+	| op_expression INSTANCEOF op_expression			{$$ = ast.BinaryExpression("instanceof", $1, $3);}
+	| op_expression IN op_expression					{$$ = ast.BinaryExpression("in", $1, $3);}
 	;
-	
-	op_operator
-		: PLUS					{$$ = "+";}
-		| MINUS					{$$ = "-";}
-		| MULTIPLY				{$$ = "*";}
-		| DIVIDE				{$$ = "/";}
-		| INSTANCEOF			{$$ = "instanceof";}
-		| IN					{$$ = "in";}
-		;
 
 unary_expression
 	: post_expression										{$$ = $1;}

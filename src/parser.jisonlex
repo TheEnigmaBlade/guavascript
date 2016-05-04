@@ -130,7 +130,7 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "delete"					return "DELETE";
 "del"						return "DELETE";
 
-{id}\b						{console.log("Identifier: \""+yytext+"\"");return "IDENTIFIER";}
+{id}						return "IDENTIFIER";
 
 <<EOF>>						return "EOF";
 .							return "INVALID";
