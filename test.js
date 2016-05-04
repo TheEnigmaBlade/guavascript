@@ -6,8 +6,8 @@ var fs = require('fs');
 
 process.chdir(__dirname);
 
-var inputFile = "test/sandbox.gs";
-var outputFile = "test/sandbox.js";
+var inputFile = "examples/sandbox.gs";
+var outputFile = "examples/sandbox.js";
 
 fs.readFile(inputFile, 'utf8', function (err, data) {
 	if (err) {
