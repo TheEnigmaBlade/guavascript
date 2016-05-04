@@ -12,7 +12,8 @@ fun transpile(input) {
 			compact: true,
 			escapeless: false
 		},
-		comment: false
+		comment: false,
+		verbatim: "_verbatim"
 	})
 }
 
@@ -31,4 +32,12 @@ x.run_fail = fun(input) {
 		return
 	}
 	throw Error("Transpilation was expected to fail but didn't.\n\nInput\n----------\n"+input+"\n----------\n\nOutput\n----------\n"+output+"\n----------")
+}
+
+x.run_exec = fun(input, expectedResult) {
+	var output = transpile(input)
+	var result = eval(output)		// :fire:
+	if result != expectedResult {
+		throw Error("Eval result did not match expected.\n\nInput\n----------\n"+input+"\n----------\n\nOutput\n----------\n"+output+"\n----------\n\nEvaluation\n----------\n"+result+"\n----------\n\nExpected\n----------\n"+expectedResult+"\n----------")
+	}
 }

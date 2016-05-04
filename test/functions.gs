@@ -65,17 +65,50 @@ describe("functions", {{
 }})
 
 describe("anonymous functions", {{
+	describe("within expressions", {{
+		it("should be created", {{
+			test("f = {{}}", "f=function(){};")
+			test("f = {{test()}}", "f=function(){test();};")
+			for n, indent in 1..5 with "\n".repeat(n) {
+				test("f = {{"+indent+"}}", "f=function(){};")
+			}
+		}})
+		it("should not be created", {{
+			fail("f = {}}")
+			fail("f = {{}")
+			for n, indent in 1..5 with "\n".repeat(n) {
+				fail("f = {"+indent+"{}}")
+				fail("f = {{}"+indent+"}")
+			}
+		}})
+		
+		it("should be created with arguments", {{
+			test("f = |arg|{{}}", "f=function(arg){};")
+			for n in 1..10 {
+				var args = ",args".repeat(n)
+				test("f = |arg"+args+"|{{}}", "f=function(arg"+args+"){};")
+			}
+		}})
+		it("should not be created with arguments", {{
+			fail("f = ||{{}}")
+			fail("f = |arg{{}}") 
+			fail("f = arg|{{}}")
+			for n, indent in 1..5 with "\n".repeat(n) {
+				fail("f = |"+indent+"arg|{{}}")
+				fail("f = |arg"+indent+"|{{}}")
+			}
+		}})
+	}})
+	
 	describe("top-level execution", {{
 		it("should be wrapped", {{
 			test("{{}}", "(function(){}());")
 			test("{{test()}}", "(function(){test();}());")
 		}})
-		
 		it("should be wrapped as argument", {{
 			test("${{}}", "$(function(){})();")
 			test("${{test()}}", "$(function(){test();})();")
 		}})
-		
 		it("should be wrapped and executed with arguments", {{
 			test("|arg|{{test(arg)}}(val)", "(function(arg){test(arg);}(val));")
 			test("|arg, arg2|{{test(arg, arg2)}}(val, val2)", "(function(arg,arg2){test(arg,arg2);}(val,val2));")
