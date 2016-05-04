@@ -61,6 +61,7 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "{"							{this.begin("block");	 return "LBRACKET";}
 <block>"}"					{this.popState();		 return "RBRACKET";}
 <anonfunc>"}}"				{this.popState();		 return "REXEC";}
+"..."						return "RANGEINC";
 ".."						return "RANGE";
 
 "+="						return "PLUSASSIGN";
@@ -111,6 +112,7 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "in"						return "IN";
 "step"						return "STEP";
 "by"						return "STEP";
+"with"						return "WITH";
 "return"					return "RETURN";
 "break"						return "BREAK";
 "continue"					return "CONTINUE";

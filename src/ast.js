@@ -204,7 +204,7 @@ x.WhileLoop = function(test, body) {
 	};
 };
 
-x.ForLoop = function(varId, fromExpr, toExpr, stepExpr, body) {
+x.ForLoop = function(varId, op, fromExpr, toExpr, stepExpr, body, extraId, extraExpr) {
 	varId = identifier(varId);
 	
 	var step
@@ -212,6 +212,14 @@ x.ForLoop = function(varId, fromExpr, toExpr, stepExpr, body) {
 		step = {
 			type: "UpdateExpression",
 			operator: "++",
+			argument: varId,
+			prefix: false
+		};
+	}
+	else if(stepExpr === -1) {
+		step = {
+			type: "UpdateExpression",
+			operator: "--",
 			argument: varId,
 			prefix: false
 		};
@@ -225,10 +233,14 @@ x.ForLoop = function(varId, fromExpr, toExpr, stepExpr, body) {
 		};
 	}
 	
+	if(extraId) {
+		body.body.unshift(singleVarDeclare("var", extraId, extraExpr));
+	}
+	
 	return {
 		type: "ForStatement",
 		init: singleVarDeclare("var", varId, fromExpr, true),
-		test: x.BinaryExpression("<", varId, toExpr),
+		test: x.BinaryExpression(op, varId, toExpr),
 		update: step,
 		body: body
 	};
