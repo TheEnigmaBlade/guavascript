@@ -7,6 +7,7 @@
 %}
 
 newline			[\n\r]
+space			[ \t]
 number			([0-9]([_]?[0-9])*)([\.][0-9]+)?|[\.][0-9]+
 hexnumber		[0-9a-fA-F]([_]?[0-9a-fA-F])*
 octalnumber		[0-7]([_]?[0-7])*
@@ -30,7 +31,7 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 <comment>.*?("*/")			{yy.commentDepth--; if(yy.commentDepth === 0) {this.popState();}}
 
 {newline}+					return "NEWLINE";
-\s+							/* Ignore whitespace */
+{space}+					/* Ignore whitespace */
 
 \"							{this.begin("dstring"); string = "";}
 <dstring>\"					{this.popState(); yytext = string; return "STRING";}
@@ -129,7 +130,7 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "delete"					return "DELETE";
 "del"						return "DELETE";
 
-{id}						return "IDENTIFIER";
+{id}\b						{console.log("Identifier: \""+yytext+"\"");return "IDENTIFIER";}
 
 <<EOF>>						return "EOF";
 .							return "INVALID";
