@@ -1,8 +1,11 @@
 %{
 	var ast = require("./ast");
+	var debug = false;
 	
 	function print(t) {
-		console.log(t);
+		if(debug) {
+			console.log(t);
+		}
 	}
 	
 	// Depth tracking
@@ -20,6 +23,16 @@
 	
 	var top_level_if = [];
 	
+	function pruneTopIfs(currentDepth, same) {
+		if(!same) {
+			currentDepth++;
+		}
+		while(top_level_if.length > 0 && top_level_if[top_level_if.length-1]._depth >= currentDepth) {
+			var top = top_level_if.pop();
+			print("Popped if at "+top._depth);
+		}
+	}
+	
 	function processTopLevelExpression(yy, e, nameAnon) {
 		// Move if-else/else into alternate slots
 		if(e._if) {
@@ -30,11 +43,16 @@
 		}
 		if(e._if_else || e._else) {
 			print("!Start if-else/else: "+depth);
+			pruneTopIfs(depth);
+			
+			if(top_level_if.length === 0) {
+				throw Error("No previous ifs for else")
+			}
 			
 			var top = top_level_if[top_level_if.length-1];
 			print("  Top if depth: "+top._depth);
-			if(top_level_if.length === 0 || top._depth !== depth) {
-				throw "else-if/else found before if";
+			if(top._depth !== depth) {
+				throw Error("else-if/else found before if");
 			}
 			
 			top.alternate = e;
@@ -49,10 +67,7 @@
 		print("Processing other top-level thing");
 		print("  Depth: "+depth);
 		print("  Type: "+e.type);
-		while(top_level_if.length > 0 && top_level_if[top_level_if.length-1]._depth >= depth) {
-			var top = top_level_if.pop();
-			print("  Popping if: "+top._depth);
-		}
+		pruneTopIfs(depth, true);
 		
 		// Wrap or declarize functions
 		if(e._anon) {
@@ -137,9 +152,9 @@ var_declaration
 expression
 	: alias_call_expressions								{$$ = $1;}
 	| execution_expression									{$$ = $1;}
-	| anon_expression										{$$ = $1;}
-	| object_expression										{$$ = $1;}
-	| array_expression										{$$ = $1;}
+	//| anon_expression										{$$ = $1;}
+	//| object_expression										{$$ = $1;}
+	//| array_expression										{$$ = $1;}
 	| function_expression									{$$ = $1;}
 	| control_expression									{$$ = $1;}
 	| loop_expression										{$$ = $1;}
@@ -231,20 +246,20 @@ control_expression
 loop_expression
 	: LOOP block_expression														{$$ = ast.LoopExpression($2);}
 	| WHILE conditional_expression w block_expression							{$$ = ast.WhileLoop($2, $4);}
-	| FOR IDENTIFIER IN iterable w block_expression								{$$ = ast.ForEachLoop($4, $2, $6);}
+	| FOR IDENTIFIER IN primary_expression w block_expression					{$$ = ast.ForEachLoop($4, $2, $6);}
 	| FOR IDENTIFIER IN op_expression RANGE op_expression w block_expression	{$$ = ast.ForLoop($2, $4, $6, 1, $8);}
 	| FOR IDENTIFIER IN op_expression RANGE op_expression STEP op_expression w block_expression		{$$ = ast.ForLoop($2, $4, $6, $8, $10);}
 	;
-	
-	iterable
-		: op_expression
-		| array_expression
-		;
 
 try_catch_expression
 	: TRY expression w CATCH IDENTIFIER w block_expression		{
 		$$ = ast.TryExpression(ast.BlockExpression([processTopLevelExpression(yy, $2)]),
-								ast.CatchClause(ast.Identifier($5), $7));}
+								ast.CatchClause(ast.Identifier($5), $7));
+	}
+	| IF expression CATCH IDENTIFIER w block_expression {
+		$$ = ast.TryExpression(ast.BlockExpression([processTopLevelExpression(yy, $2)]),
+								ast.CatchClause(ast.Identifier($4), $6));
+	}
 	;
 
 	block_expression
@@ -253,10 +268,6 @@ try_catch_expression
 		
 		inc_depth:	{incDepth();};
 		dec_depth:	{decDepth();};
-
-regex_expression
-	:
-	;
 
 // Begin "normal" expression chain
 
@@ -314,6 +325,7 @@ unary_expression
 	| NEW post_expression LPAREN w RPAREN					{$$ = ast.NewExpression($2);}
 	| NEW post_expression LPAREN w call_arguments w RPAREN	{$$ = ast.NewExpression($2, $5);}
 	| TYPEOF post_expression								{$$ = ast.UnaryExpression("typeof", $2);}
+	| DELETE post_expression								{$$ = ast.UnaryExpression("delete", $2);}
 	;
 
 post_expression
@@ -333,6 +345,9 @@ primary_expression
 	: IDENTIFIER											{$$ = ast.Identifier($1);}
 	| constant												{$$ = $1;}
 	| LPAREN w expression w RPAREN							{$$ = $3;}
+	| anon_expression										{$$ = $1;}
+	| object_expression										{$$ = $1;}
+	| array_expression										{$$ = $1;}
 	;
 
 constant

@@ -124,6 +124,8 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 ("try"|"protect"|"guard")\b	return "TRY";
 ("catch"|"except")\b		return "CATCH";
 "always"					return "FINALLY";
+"delete"					return "DELETE";
+"del"						return "DELETE";
 
 {id}						return "IDENTIFIER";
 
