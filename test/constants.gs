@@ -48,7 +48,7 @@ describe("constants", {{
 			test("\"\"", "'';")
 			test("'test'", "'test';")
 			test("\"test\"", "'test';")
-			for esc in ["\\\\", "\\n", "\\r", "\\t"] {
+			for esc in ["\\\\", "\\n", "\\r", "\\t", "\\0", "\\'", "\\\\\""] {
 				test("'test"+esc+"test'", "'test"+esc+"test';")
 			}
 		}})

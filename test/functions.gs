@@ -23,6 +23,37 @@ describe("functions", {{
 			fail("fun\na(){}")
 			fail("fun a\n(){}")
 		}})
+		
+		it("should be declared with arguments", {{
+			test("fun a(arg){}", "function a(arg){}")
+			test("fun a(arg\n){}", "function a(arg){}")
+			test("fun a(\narg){}", "function a(arg){}")
+			
+			for n in 1..5 {
+				var arg = ",arg".repeat(n),
+					argi = ",\narg".repeat(n)
+				test("fun a(arg"+arg+"){}", "function a(arg"+arg+"){}")
+				test("fun a(arg"+arg+"){}", "function a(arg"+arg+"){}")
+			}
+		}})
+		it("should not be declared with arguments", {{
+			fail("fun a arg {}")
+			fail("fun a(arg{}")
+			fail("fun a arg){}")
+			fail("fun a(arg,){}")
+			fail("fun a(arg, arg2,){}")
+		}})
+	}})
+	
+	describe("assignment", {{
+		it("should be created", {{
+			test("f = fun {}", "f=function(){};")
+			test("f = fun() {}", "f=function(){};")
+			test("f = fun(test) {}", "f=function(test){};")
+			
+			test("f = fun a {}", "f=function a(){};")
+			test("f = fun a() {}", "f=function a(){};")
+		}})
 	}})
 	
 	describe("normal call", {{
@@ -102,6 +133,7 @@ describe("anonymous functions", {{
 	
 	describe("top-level execution", {{
 		it("should be wrapped", {{
+			test("fun {}", "(function(){}());")
 			test("{{}}", "(function(){}());")
 			test("{{test()}}", "(function(){test();}());")
 		}})
