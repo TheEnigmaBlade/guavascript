@@ -216,13 +216,31 @@ x.ForLoop = function(varId, op, fromExpr, toExpr, stepExpr, body, extraId, extra
 			prefix: false
 		};
 	}
-	else if(stepExpr === -1) {
-		step = {
-			type: "UpdateExpression",
-			operator: "--",
-			argument: varId,
-			prefix: false
-		};
+	else if(stepExpr.type === "UnaryExpression" && stepExpr.operator === "-") {
+		if(op === "<") {
+			op = ">";
+		}
+		else if(op === "<=") {
+			op = ">=";
+		}
+		
+		var stepExpr = stepExpr.argument;
+		if(stepExpr.type === "Literal" && stepExpr.value === 1) {
+			step = {
+				type: "UpdateExpression",
+				operator: "--",
+				argument: varId,
+				prefix: false
+			};
+		}
+		else {
+			step = {
+				type: "AssignmentExpression",
+				operator: "-=",
+				left: varId,
+				right: stepExpr
+			};
+		}
 	}
 	else {
 		step = {

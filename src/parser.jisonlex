@@ -67,10 +67,9 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 
 "+="						return "PLUSASSIGN";
 "-="						return "MINUSASSIGN";
-"*="						return "MULTIPLAYASSIGN";
+"*="						return "MULTIPLYASSIGN";
 "/="						return "DIVIDEASSIGN";
 "=="						return "EQUALS";
-"is"						return "EQUALS";
 "!="						return "NOTEQUALS";
 ">="						return "GTE";
 "<="						return "LTE";
@@ -87,6 +86,7 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "="							return "ASSIGN";
 "|"							return "BITOR";
 "&"							return "BITAND";
+"^"							return "BITXOR";
 
 "["							return "LSQUARE";
 "]"							return "RSQUARE";

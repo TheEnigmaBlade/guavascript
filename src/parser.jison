@@ -96,11 +96,19 @@
 			list.push(thing);
 		}
 	}
+	
+	// Exports
+	
+	if (typeof require !== 'undefined' && typeof exports !== 'undefined') {
+		exports.reset = function() {
+			depth = 0;
+			top_level_if = [];
+		};
+	}
 %}
 
 %left INSTANCEOF IN
-%left BITOR
-%left BITAND
+%left BITAND BITOR BITXOR
 %left AND OR
 %right NOT
 %left PLUS MINUS
@@ -226,7 +234,7 @@ anon_expression
 	
 	anon_arguments
 		: IDENTIFIER										{$$ = [ast.Identifier($1)];}
-		| anon_arguments COMMA IDENTIFIER					{$1.push(ast.Identifier($3));}
+		| anon_arguments COMMA w IDENTIFIER					{$1.push(ast.Identifier($4));}
 		;
 
 control_expression
@@ -323,6 +331,9 @@ op_expression
 	| op_expression MINUS op_expression					{$$ = ast.BinaryExpression("-", $1, $3);}
 	| op_expression MULTIPLY op_expression				{$$ = ast.BinaryExpression("*", $1, $3);}
 	| op_expression DIVIDE op_expression				{$$ = ast.BinaryExpression("/", $1, $3);}
+	| op_expression BITAND op_expression				{$$ = ast.BinaryExpression("&", $1, $3);}
+	//| op_expression BITOR op_expression					{$$ = ast.BinaryExpression("|", $1, $3);}	TODO, causing conflicts
+	| op_expression BITXOR op_expression				{$$ = ast.BinaryExpression("^", $1, $3);}
 	| op_expression INSTANCEOF op_expression			{$$ = ast.BinaryExpression("instanceof", $1, $3);}
 	| op_expression IN op_expression					{$$ = ast.BinaryExpression("in", $1, $3);}
 	;
