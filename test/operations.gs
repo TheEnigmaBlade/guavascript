@@ -9,12 +9,18 @@ describe("operations", {{
 			test("x - 2", "x-2;")
 			test("x * 2", "x*2;")
 			test("x / 2", "x/2;")
+			test("x /# 2", "Math.floor(x/2);")
+			test("x % 2", "x%2;")
 		}})
 		it("should work", {{
 			exec("6 + 2", 8)
 			exec("6 - 2", 4)
 			exec("6 * 2", 12)
 			exec("6 / 2", 3)
+			exec("6 / 4", 1.5)
+			exec("6 /# 4", 1)
+			exec("6 % 2", 0)
+			exec("6 % 4", 2)
 		}})
 	}})
 	
@@ -63,7 +69,16 @@ describe("operations", {{
 			test("del x", "delete x;")
 		}})
 		it("should not be converted", {{
+			fail("random x")
+			fail("typeo x")
+			fail("dele x")
 			
+			fail("x in")
+			fail("in a")
+			fail("x instanceof")
+			fail("instanceof Array")
+			fail("delete")
+			fail("typeof")
 		}})
 	}})
 	
