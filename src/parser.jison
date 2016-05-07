@@ -112,7 +112,7 @@
 %left AND OR
 %right NOT
 %left PLUS MINUS
-%left MULTIPLY DIVIDE
+%left MULTIPLY DIVIDE DIVIDEINT MODULUS
 %right UMINUS
 
 %start program
@@ -229,7 +229,9 @@ function_expression
 
 anon_expression
 	: LEXEC expressions REXEC								{$$ = ast.AnonFuncExpression(null, ast.BlockExpression($2));}
-	| BITOR anon_arguments BITOR LEXEC expressions REXEC	{$$ = ast.AnonFuncExpression($2, ast.BlockExpression($5));}
+	//| BITOR anon_arguments BITOR LEXEC expressions REXEC	{$$ = ast.AnonFuncExpression($2, ast.BlockExpression($5));}
+	| LEXEC w COLON anon_arguments COLON expressions REXEC	{$$ = ast.AnonFuncExpression($4, ast.BlockExpression($6));}
+	| LEXEC w ARGMARK anon_arguments expressions REXEC		{$$ = ast.AnonFuncExpression($4, ast.BlockExpression($5));}
 	;
 	
 	anon_arguments
@@ -259,7 +261,7 @@ loop_expression
 	;
 	
 	for_loop_expressions
-		: FOR IDENTIFIER IN primary_expression w block_expression				{$$ = ast.ForEachLoop($4, $2, $6);}
+		: FOR IDENTIFIER IN post_expression w block_expression				{$$ = ast.ForEachLoop($4, $2, $6);}
 		| FOR IDENTIFIER IN op_expression range_operator op_expression w block_expression		{$$ = ast.ForLoop($2, $5, $4, $6, 1, $8);}
 		| FOR IDENTIFIER IN op_expression range_operator op_expression STEP op_expression w block_expression		{$$ = ast.ForLoop($2, $5, $4, $6, $8, $10);}
 		| FOR IDENTIFIER COMMA IDENTIFIER IN op_expression range_operator op_expression WITH op_expression w block_expression		{$$ = ast.ForLoop($2, $7, $6, $8, 1, $12, $4, $10);}
@@ -331,8 +333,10 @@ op_expression
 	| op_expression MINUS op_expression					{$$ = ast.BinaryExpression("-", $1, $3);}
 	| op_expression MULTIPLY op_expression				{$$ = ast.BinaryExpression("*", $1, $3);}
 	| op_expression DIVIDE op_expression				{$$ = ast.BinaryExpression("/", $1, $3);}
+	| op_expression DIVIDEINT op_expression				{$$ = ast.DivideInt($1, $3);}
+	| op_expression MODULUS op_expression				{$$ = ast.BinaryExpression("%", $1, $3);}
 	| op_expression BITAND op_expression				{$$ = ast.BinaryExpression("&", $1, $3);}
-	//| op_expression BITOR op_expression					{$$ = ast.BinaryExpression("|", $1, $3);}	TODO, causing conflicts
+	| op_expression BITOR op_expression					{$$ = ast.BinaryExpression("|", $1, $3);}
 	| op_expression BITXOR op_expression				{$$ = ast.BinaryExpression("^", $1, $3);}
 	| op_expression INSTANCEOF op_expression			{$$ = ast.BinaryExpression("instanceof", $1, $3);}
 	| op_expression IN op_expression					{$$ = ast.BinaryExpression("in", $1, $3);}

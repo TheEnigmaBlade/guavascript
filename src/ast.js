@@ -477,6 +477,15 @@ x.Regex = function(regex) {
 
 x.Identifier = identifier;
 
+// Special ops
+
+x.DivideInt = function(left, right){
+	return x.CallExpression(
+		x.PropertyExpression(identifier("Math"), identifier("floor")),
+		[x.BinaryExpression("/", left, right)]
+	);
+};
+
 // Function aliases
 
 x.AliasPrint = function(args, funcName) {

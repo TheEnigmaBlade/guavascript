@@ -25,10 +25,10 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 %%
 
 "//".*						/* Ignore comments */
-"#".*						/* Ignore comments */
 "/*"						{yy.commentDepth++; this.begin("comment");}
 <comment>.*?("/*")			{yy.commentDepth++;}
 <comment>.*?("*/")			{yy.commentDepth--; if(yy.commentDepth === 0) {this.popState();}}
+<comment>.*?{newline}		/* Ignore comments */
 
 {newline}+					return "NEWLINE";
 {space}+					/* Ignore whitespace */
@@ -80,9 +80,11 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "not"						return "NOT";
 
 "*"							return "MULTIPLY";
+"/#"						return "DIVIDEINT";
 "/"							return "DIVIDE";
 "-"							return "MINUS";
 "+"							return "PLUS";
+"%"							return "MODULUS";
 "="							return "ASSIGN";
 "|"							return "BITOR";
 "&"							return "BITAND";
@@ -96,6 +98,7 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 ","							return "COMMA";
 ":"							return "COLON";
 "?"							return "TERNARY";
+"@"|"#"						return "ARGMARK";
 
 "true"						return "TRUE";
 "false"						return "FALSE";

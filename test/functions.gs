@@ -114,19 +114,34 @@ describe("anonymous functions", {{
 		}})
 		
 		it("should be created with arguments", {{
-			test("f = |arg|{{}}", "f=function(arg){};")
+			//test("f = |arg|{{}}", "f=function(arg){};")
+			//for n in 1..10 {
+			//	var args = ",args".repeat(n)
+			//	test("f = |arg"+args+"|{{}}", "f=function(arg"+args+"){};")
+			//}
+			test("f = {{:arg:}}", "f=function(arg){};")
+			test("f = {{:arg:test(arg)}}", "f=function(arg){test(arg);};")
+			test("f = {{:arg: test(arg)}}", "f=function(arg){test(arg);};")
+			test("f = {{\n:arg:\n}}", "f=function(arg){};")
 			for n in 1..10 {
 				var args = ",args".repeat(n)
-				test("f = |arg"+args+"|{{}}", "f=function(arg"+args+"){};")
+				test("f = {{:arg"+args+":}}", "f=function(arg"+args+"){};")
 			}
 		}})
 		it("should not be created with arguments", {{
-			fail("f = ||{{}}")
-			fail("f = |arg{{}}") 
-			fail("f = arg|{{}}")
+			//fail("f = ||{{}}")
+			//fail("f = |arg{{}}") 
+			//fail("f = arg|{{}}")
+			//for n, indent in 1..5 with "\n".repeat(n) {
+			//	fail("f = |"+indent+"arg|{{}}")
+			//	fail("f = |arg"+indent+"|{{}}")
+			//}
+			fail("f = {{::}}")
+			fail("f = {{:arg}}") 
+			fail("f = {{arg:}}")
 			for n, indent in 1..5 with "\n".repeat(n) {
-				fail("f = |"+indent+"arg|{{}}")
-				fail("f = |arg"+indent+"|{{}}")
+				fail("f = {{:"+indent+"arg:}}")
+				fail("f = {{:arg"+indent+":}}")
 			}
 		}})
 	}})
@@ -142,8 +157,10 @@ describe("anonymous functions", {{
 			test("${{test()}}", "$(function(){test();})();")
 		}})
 		it("should be wrapped and executed with arguments", {{
-			test("|arg|{{test(arg)}}(val)", "(function(arg){test(arg);}(val));")
-			test("|arg, arg2|{{test(arg, arg2)}}(val, val2)", "(function(arg,arg2){test(arg,arg2);}(val,val2));")
+		//	test("|arg|{{test(arg)}}(val)", "(function(arg){test(arg);}(val));")
+		//	test("|arg, arg2|{{test(arg, arg2)}}(val, val2)", "(function(arg,arg2){test(arg,arg2);}(val,val2));")
+			test("{{:arg: test(arg)}}(val)", "(function(arg){test(arg);}(val));")
+			test("{{:arg, arg2: test(arg, arg2)}}(val, val2)", "(function(arg,arg2){test(arg,arg2);}(val,val2));")
 		}})
 	}})
 }})
