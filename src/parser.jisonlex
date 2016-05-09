@@ -114,9 +114,9 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "while"						return "WHILE";
 "for"						return "FOR";
 "in"						return "IN";
-"step"						return "STEP";
-"by"						return "STEP";
+("step"|"by")\b				return "STEP";
 "with"						return "WITH";
+("reverse"|"rev")\b			return "REVERSE";
 "return"					return "RETURN";
 "break"						return "BREAK";
 "continue"					return "CONTINUE";
@@ -132,6 +132,8 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "always"					return "FINALLY";
 "delete"					return "DELETE";
 "del"						return "DELETE";
+
+"proto"						{yytext = "prototype"; return "IDENTIFIER";}
 
 {id}						return "IDENTIFIER";
 

@@ -262,6 +262,7 @@ loop_expression
 	
 	for_loop_expressions
 		: FOR IDENTIFIER IN post_expression w block_expression				{$$ = ast.ForEachLoop($4, $2, $6);}
+		| FOR IDENTIFIER IN post_expression REVERSE w block_expression				{$$ = ast.ForEachLoop($4, $2, $6, true);}
 		| FOR IDENTIFIER IN op_expression range_operator op_expression w block_expression		{$$ = ast.ForLoop($2, $5, $4, $6, 1, $8);}
 		| FOR IDENTIFIER IN op_expression range_operator op_expression STEP op_expression w block_expression		{$$ = ast.ForLoop($2, $5, $4, $6, $8, $10);}
 		| FOR IDENTIFIER COMMA IDENTIFIER IN op_expression range_operator op_expression WITH op_expression w block_expression		{$$ = ast.ForLoop($2, $7, $6, $8, 1, $12, $4, $10);}

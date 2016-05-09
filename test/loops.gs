@@ -115,6 +115,7 @@ describe("loops", {{
 		it("should be converted", {{
 			test("for x in a {}", "for(var $$for_00000001$$=0;$$for_00000001$$<a.length;$$for_00000001$$++){var x=a[$$for_00000001$$];}")
 			test("for x in a\n{}", "for(var $$for_00000002$$=0;$$for_00000002$$<a.length;$$for_00000002$$++){var x=a[$$for_00000002$$];}")
+			test("for x in a rev {}", "for(var $$for_00000003$$=a.length-1;$$for_00000003$$>-0;$$for_00000003$$--){var x=a[$$for_00000003$$];}")
 		}})
 	}})
 }})

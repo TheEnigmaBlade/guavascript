@@ -264,17 +264,29 @@ x.ForLoop = function(varId, op, fromExpr, toExpr, stepExpr, body, extraId, extra
 	};
 };
 
-x.ForEachLoop = function(iter, varId, body) {
+x.ForEachLoop = function(iter, varId, body, reversed) {
 	var iterId = identifier(getUID("for"));
 	body.body.unshift(singleVarDeclare("var", varId, x.MemberExpression(iter, iterId)));
 	
+	var start, end, endOp;
+	if(reversed) {
+		start = x.BinaryExpression("-", x.PropertyExpression(iter, identifier("length")), 1);
+		end = x.NumericLiteral("0");
+		endOp = ">=";
+	}
+	else {
+		start = x.NumericLiteral("0");
+		end = x.PropertyExpression(iter, identifier("length"));
+		endOp = "<";
+	}
+	
 	return {
 		type: "ForStatement",
-		init: singleVarDeclare("var", iterId, x.NumericLiteral("0"), true),
-		test: x.BinaryExpression("<", iterId, x.PropertyExpression(iter, identifier("length"))),
+		init: singleVarDeclare("var", iterId, start, true),
+		test: x.BinaryExpression(endOp, iterId, end),
 		update: {
 			type: "UpdateExpression",
-			operator: "++",
+			operator: reversed ? "--" : "++",
 			argument: iterId,
 			prefix: false
 		},
