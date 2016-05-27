@@ -125,6 +125,9 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 ("try"|"protect"|"guard")\b	return "TRY";
 ("catch"|"except")\b		return "CATCH";
 "always"					return "FINALLY";
+"import"					return "IMPORT";
+"from"						return "FROM";
+"as"						return "AS";
 "this"						return "THIS";
 "new"						return "NEW";
 "instanceof"				return "INSTANCEOF";

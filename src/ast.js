@@ -270,7 +270,7 @@ x.ForEachLoop = function(iter, varId, body, reversed) {
 	
 	var start, end, endOp;
 	if(reversed) {
-		start = x.BinaryExpression("-", x.PropertyExpression(iter, identifier("length")), 1);
+		start = x.BinaryExpression("-", x.PropertyExpression(iter, identifier("length")), x.NumericLiteral("1"));
 		end = x.NumericLiteral("0");
 		endOp = ">=";
 	}
@@ -344,6 +344,37 @@ x.ThrowStatement = function(arg) {
 		type: "ThrowStatement",
 		argument: arg
 	};
+};
+
+x.ImportDeclaration = function(from, members) {
+	return {
+		type: "ImportDeclaration",
+		source: x.StringLiteral(from),
+		specifiers: members || []
+	};
+};
+
+x.ImportAllDeclaration = function(from, as) {
+	return x.ImportDeclaration(from, [{
+		type: "ImportNamespaceSpecifier",
+		local: identifier(as)
+	}]);
+};
+
+x.ImportMember = function(name, as) {
+	if(as) {
+		return {
+			type: "ImportSpecifier",
+			local: identifier(name),
+			imported: identifier(as)
+		};
+	}
+	else {
+		return {
+			type: "ImportDefaultSpecifier",
+			local: identifier(name)
+		};
+	}
 };
 
 x.TryExpression = function(body, catchBlock, finallyBlock) {

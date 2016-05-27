@@ -143,6 +143,7 @@ expressions
 
 statement
 	: var_declaration										{$$ = $1;}
+	| import_declaration									{$$ = $1;}
 	| THROW expression										{$$ = ast.ThrowStatement($2);}
 	;
 
@@ -155,6 +156,19 @@ var_declaration
 		| IDENTIFIER assignment_operator expression								{$$ = [ast.VarDeclaration($1, $3)];}
 		| var_declarators COMMA w IDENTIFIER									{$1.push(ast.VarDeclaration($4));}
 		| var_declarators COMMA w IDENTIFIER assignment_operator expression		{$1.push(ast.VarDeclaration($4, $6));}
+		;
+
+import_declaration
+	: IMPORT STRING											{$$ = ast.ImportDeclaration($2);}
+	| IMPORT import_members FROM STRING						{$$ = ast.ImportDeclaration($4, $2);}
+	| IMPORT AS IDENTIFIER FROM STRING						{$$ = ast.ImportAllDeclaration($5, $3);}
+	;
+	
+	import_members
+		: IDENTIFIER										{$$ = [ast.ImportMember($1)];}
+		| IDENTIFIER AS IDENTIFIER							{$$ = [ast.ImportMember($1, $3)];}
+		| IDENTIFIER COMMA import_members					{$$ = $3; $$.unshift(ast.ImportMember($1, $1));} /* Make non-default specifier if chained */
+		| IDENTIFIER AS IDENTIFIER COMMA import_members		{$$ = $5; $$.unshift(ast.ImportMember($1, $3));}
 		;
 
 // Expressions
@@ -264,7 +278,7 @@ loop_expression
 	
 	for_loop_expressions
 		: FOR IDENTIFIER IN post_expression w block_expression				{$$ = ast.ForEachLoop($4, $2, $6);}
-		| FOR IDENTIFIER IN post_expression REVERSE w block_expression				{$$ = ast.ForEachLoop($4, $2, $6, true);}
+		| FOR IDENTIFIER IN post_expression REVERSE w block_expression				{$$ = ast.ForEachLoop($4, $2, $7, true);}
 		| FOR IDENTIFIER IN op_expression range_operator op_expression w block_expression		{$$ = ast.ForLoop($2, $5, $4, $6, 1, $8);}
 		| FOR IDENTIFIER IN op_expression range_operator op_expression STEP op_expression w block_expression		{$$ = ast.ForLoop($2, $5, $4, $6, $8, $10);}
 		| FOR IDENTIFIER COMMA IDENTIFIER IN op_expression range_operator op_expression WITH op_expression w block_expression		{$$ = ast.ForLoop($2, $7, $6, $8, 1, $12, $4, $10);}
