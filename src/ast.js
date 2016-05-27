@@ -403,6 +403,22 @@ x.BinaryExpression = function(op, left, right) {
 	};
 };
 
+x.CustomBinaryExpression = function(op, left, right) {
+	switch(op) {
+		// Math
+		case "max":
+		case "min":
+		case "pow":
+			return x.CallExpression(
+				x.PropertyExpression(identifier("Math"), identifier(op)),
+				[left, right]
+			);
+	}
+	
+	// Shouldn't get to this point
+	throw Error("Unknown binary expression \""+op+"\"");
+};
+
 x.LogicExpression = function(op, left, right) {
 	return {
 		type: "LogicalExpression",

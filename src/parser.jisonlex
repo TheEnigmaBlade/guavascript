@@ -79,6 +79,7 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "or"						return "OR";
 "not"						return "NOT";
 
+"**"						return "POWER";
 "*"							return "MULTIPLY";
 "/#"						return "DIVIDEINT";
 "/"							return "DIVIDE";
@@ -106,10 +107,10 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "undefined"					return "UNDEFINED";
 
 ("function"|"func"|"fun")\b	return "FUNCTION";
-"var"						return "VARIABLE";
-"let"						return "VARIABLE";
+("var"|"let")\b				return "VARIABLE";
 "if"						return "IF";
 "else"						return "ELSE";
+"elif"						return "ELIF";
 "loop"						return "LOOP";
 "while"						return "WHILE";
 "for"						return "FOR";
@@ -120,18 +121,20 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "return"					return "RETURN";
 "break"						return "BREAK";
 "continue"					return "CONTINUE";
-"print"						return "PRINT";
-"error"						return "ERROR";
-"this"						return "THIS";
-"new"						return "NEW";
-"instanceof"				return "INSTANCEOF";
-"typeof"					return "TYPEOF";
 "throw"						return "THROW";
 ("try"|"protect"|"guard")\b	return "TRY";
 ("catch"|"except")\b		return "CATCH";
 "always"					return "FINALLY";
-"delete"					return "DELETE";
-"del"						return "DELETE";
+"this"						return "THIS";
+"new"						return "NEW";
+"instanceof"				return "INSTANCEOF";
+"typeof"					return "TYPEOF";
+("delete"|"del")\b			return "DELETE";
+"max"						return "MAX";
+"min"						return "MIN";
+
+"print"						return "PRINT";
+"error"						return "ERROR";
 
 "proto"						{yytext = "prototype"; return "IDENTIFIER";}
 

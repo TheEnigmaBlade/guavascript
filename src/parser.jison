@@ -107,12 +107,13 @@
 	}
 %}
 
-%left INSTANCEOF IN
+%left INSTANCEOF IN MAX MIN
 %left BITAND BITOR BITXOR
 %left AND OR
 %right NOT
 %left PLUS MINUS
 %left MULTIPLY DIVIDE DIVIDEINT MODULUS
+%left POWER
 %right UMINUS
 
 %start program
@@ -251,6 +252,7 @@ control_expression
 	if_control_expression
 		: IF conditional_expression w block_expression			{$$ = ast.IfExpression($2, $4);}
 		| ELSE IF conditional_expression w block_expression		{$$ = ast.ElseIfExpression($3, $5);}
+		| ELIF conditional_expression w block_expression		{$$ = ast.ElseIfExpression($2, $4);}
 		| ELSE w block_expression								{$$ = ast.ElseExpression($3);}
 		;
 	
@@ -341,6 +343,9 @@ op_expression
 	| op_expression BITXOR op_expression				{$$ = ast.BinaryExpression("^", $1, $3);}
 	| op_expression INSTANCEOF op_expression			{$$ = ast.BinaryExpression("instanceof", $1, $3);}
 	| op_expression IN op_expression					{$$ = ast.BinaryExpression("in", $1, $3);}
+	| op_expression MAX op_expression					{$$ = ast.CustomBinaryExpression("max", $1, $3);}
+	| op_expression MIN op_expression					{$$ = ast.CustomBinaryExpression("min", $1, $3);}
+	| op_expression POWER op_expression					{$$ = ast.CustomBinaryExpression("pow", $1, $3);}
 	;
 
 unary_expression
