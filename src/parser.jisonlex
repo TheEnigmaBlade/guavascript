@@ -69,6 +69,8 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "-="						return "MINUSASSIGN";
 "*="						return "MULTIPLYASSIGN";
 "/="						return "DIVIDEASSIGN";
+"|="						return "ORASSIGN";
+"&="						return "ANDASSIGN";
 "=="						return "EQUALS";
 "!="						return "NOTEQUALS";
 ">="						return "GTE";

@@ -321,6 +321,8 @@ assignment_expression
 		| MINUSASSIGN				{$$ = "-=";}
 		| MULTIPLYASSIGN			{$$ = "*=";}
 		| DIVIDEASSIGN				{$$ = "/=";}
+		| ORASSIGN					{$$ = "|=";}
+		| ANDASSIGN					{$$ = "&=";}
 		;
 
 conditional_expression

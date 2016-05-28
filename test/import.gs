@@ -15,6 +15,7 @@ describe("import", {{
 			fail("import callme()")
 		}})
 	}})
+	
 	describe("namespace", {{
 		// In Javascript, this is `import * as X from 'Y';`
 		// Also generating with little whitespace is weird.
@@ -28,6 +29,7 @@ describe("import", {{
 			fail("import as m")
 		}})
 	}})
+	
 	describe("specifiers", {{
 		it("should convert", {{
 			test("import testFun from 'myModule'", "import testFun from'myModule';")
