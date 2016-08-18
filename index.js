@@ -5,7 +5,8 @@ var fs = require('fs');
 var parser = require("./src/parser").parser;
 var generate = require("escodegen").generate;
 
-program.arguments("<input_file> <output_file>")
+//console.error("Args: "+process.argv);
+program.arguments("<input_file> [output_file]")
 	.option("-t, --tab-style <tab_style>", "The type of tab to use, either 'tab' or 'space'.")
 	.option("-q, --quote-style <tab_style>", "The type of quote to use, either 'single' or 'double'.")
 	.action(function(input_file, output_file) {
@@ -18,9 +19,10 @@ program.arguments("<input_file> <output_file>")
 	.parse(process.argv);
 
 function transpile(input_file, output_file, tab_style) {
+	//console.error(input_file);
 	fs.readFile(input_file, 'utf8', function (err, data) {
 		if (err) {
-			return console.log(err);
+			return console.error(err);
 		}
 		
 		var parsed = parser.parse(data);
@@ -30,10 +32,15 @@ function transpile(input_file, output_file, tab_style) {
 		//console.log("---------------");
 		//console.log(output);
 		
-		fs.writeFile(output_file, output, function(err) {
-			if(err) {
-				console.log(err);
-			}
-		});
+		if(output_file) {
+			fs.writeFile(output_file, output, function(err) {
+				if(err) {
+					console.error(err);
+				}
+			});
+		}
+		else {
+			process.stdout.write(output);
+		}
 	});
 }

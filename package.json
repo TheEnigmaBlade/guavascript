@@ -11,7 +11,7 @@
   },
   "scripts": {
     "start": "node index.js",
-    "test": "mocha test/*.js"
+    "test": "mocha -R min test/*.js"
   },
   "keywords": [
     "javascript"
