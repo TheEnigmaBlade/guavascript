@@ -16,6 +16,7 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 
 %x dstring
 %x sstring
+%x fstring
 %x esc
 %x comment
 
@@ -42,6 +43,11 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 <sstring>\'					{this.popState(); yytext = string; return "STRING";}
 <sstring>\\					{this.begin("esc");}
 <sstring>[^'\\]*			{string += yytext;}
+
+\`							{this.begin("fstring"); string = ""; return "TEMPLATE";}
+<fstring>\`					{this.popState(); yytext = string;}
+<fstring>"${"([^\}]+)"}"	{yytext = this.matches[1]; return "TEMPLATE_VAL";}
+<fstring>[^`\$]+			{return "TEMPLATE_STR";}
 
 <esc>[n]					{string += "\n"; this.popState();}	/* There has to be a better way to do this... */
 <esc>[r]					{string += "\r"; this.popState();}
@@ -109,7 +115,7 @@ id				[a-zA-Z_$][a-zA-Z0-9_$]*
 "undefined"					return "UNDEFINED";
 
 ("function"|"func"|"fun")\b	return "FUNCTION";
-("var"|"let")\b				return "VARIABLE";
+("var"|"let"|"const")\b		return "VARIABLE";
 "if"						return "IF";
 "else"						return "ELSE";
 "elif"						return "ELIF";

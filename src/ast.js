@@ -1,3 +1,4 @@
+"use strict";
 var escodegen = require("escodegen");
 var x = module.exports = {};
 
@@ -24,12 +25,16 @@ function singleVarDeclare(type, id, init, rawId) {
 	return x.VarDeclarations(type, [x.VarDeclaration(id, init, rawId)]);
 }
 
+function cookString(val) {
+	return val;
+}
+
 // UID generation
 var _uid = 0;
 
 function getUID(prefix) {
 	_uid += 1;
-	hex = ("00000000" + _uid.toString(16)).substr(-8);
+	let hex = ("00000000" + _uid.toString(16)).substr(-8);
 	return "$$"+prefix+"_"+hex+"$$";
 }
 
@@ -532,6 +537,59 @@ x.Regex = function(regex) {
 		precedence : escodegen.Precedence.Primary,
 	};
 	return l;
+};
+
+x.TemplateLiteral = function(values) {
+	var t = {
+		type: "TemplateLiteral",
+		quasis: [],
+		expressions: [],
+		_expr: true
+	};
+	
+	var wasExpr = false;
+	for(let value of values) {
+		if(value._expr) {
+			if(t.quasis.length === 0 || wasExpr) {
+				// A quasi value must always be at the beginning
+				t.quasis.push(x.TemplateString(""));
+			}
+			t.expressions.push(value);
+			wasExpr = true;
+		}
+		else {
+			t.quasis.push(value);
+			wasExpr = false;
+		}
+	}
+	
+	if(t.expressions.length >= t.quasis.length) {
+		t.quasis.push(x.TemplateString("", true));
+	}
+	else if(t.quasis.length > 0) {
+		t.quasis[t.quasis.length-1].tail = true;
+	}
+	
+	return t;
+};
+
+x.TemplateString = function(value, tail) {
+	if(tail === undefined) {
+		tail = false;
+	}
+	
+	return {
+		type: "TemplateElement",
+		tail: tail,
+		value: {
+			raw: value,					//FIXME: escapes should be escaped
+			cooked: cookString(value)
+		}
+	};
+};
+
+x.TemplateValue = function(value) {
+	return identifier(value);
 };
 
 x.Identifier = identifier;

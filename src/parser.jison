@@ -401,6 +401,7 @@ constant
 	| OCTALNUMBER											{$$ = ast.NumericLiteral($1);}
 	| BINARYNUMBER											{$$ = ast.NumericLiteral($1);}
 	| STRING												{$$ = ast.StringLiteral($1);}
+	| TEMPLATE template_content								{$$ = ast.TemplateLiteral($2);}
 	| THIS													{$$ = ast.ThisExpression();}
 	| TRUE													{$$ = ast.BooleanLiteral(true);}
 	| FALSE													{$$ = ast.BooleanLiteral(false);}
@@ -408,6 +409,12 @@ constant
 	| UNDEFINED												{$$ = ast.Undefined();}
 	| REGEX													{$$ = ast.Regex($1);}
 	;
+	
+	template_content
+		: template_content TEMPLATE_STR				{$1.push(ast.TemplateString($2));}
+		| template_content TEMPLATE_VAL				{$1.push(ast.TemplateValue($2));}
+		|											{$$ = [];}
+		;
 
 // Utilities because I'm bad at grammars
 
